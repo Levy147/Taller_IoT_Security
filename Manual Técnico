@@ -13,47 +13,41 @@ Demostrar el ciclo completo de seguridad IoT, desde el reconocimiento hasta la p
 
 ### **Requisitos Técnicos:**
 - Kali Linux o distribución Linux con Python 3.8+
-- 2 dispositivos ESP32 programados
-- Router Google WiFi configurado
+- 2 dispositivos ESP32 programados con firmware vulnerable
+- Router WiFi configurado (Google WiFi recomendado)
 - Conocimientos básicos de Python
+- Herramientas: hydra, nmap, curl
+- Wordlist: rockyou.txt
+
+### **Estructura del Proyecto:**
+```
+Material para Taller/
+├── Codigos Python/          # Scripts Python del taller
+│   ├── 1-network_scanner.py
+│   ├── 2-real_dictionary_attack.py
+│   ├── 3-iot_analyzer.py
+│   ├── 4-botnet_demo.py
+│   ├── 5-botnet_web_controller.py
+│   └── 6-security_tool.py
+└── Codigos IoT/             # Firmware ESP32
+    ├── ESP32_Simulador_de_Sala/
+    └── ESP32_Simulador_de_Entrada/
+```
+
+### **Dispositivos ESP32:**
+- **ESP32 Simulador de Sala** (IP típica: 192.168.86.114)
+  - Credenciales por defecto: admin:123456
+  - Funciones: Control de TV, luces, aire acondicionado, lámparas
+  
+- **ESP32 Simulador de Entrada** (IP típica: 192.168.86.115)
+  - Credenciales por defecto: user:12345
+  - Funciones: Control de puertas, sistema de alarma, garage
 
 ---
 
-## **SCRIPT 1: WIFI CRACKER**
+## **SCRIPT 1: NETWORK SCANNER**
 
-### **Descripción:**
-Simulador de ataque de fuerza bruta contra redes WiFi WPA2 que demuestra la vulnerabilidad de contraseñas débiles.
-
-### **Objetivos Educativos:**
-- Mostrar cómo funcionan los ataques de diccionario a redes inalámbricas
-- Demostrar la importancia de contraseñas robustas
-- Enseñar sobre el proceso de captura de handshake WPA2
-- Illustrar el uso de wordlists en ataques de seguridad
-
-### **Funcionalidades Principales:**
-- Detección automática de redes WiFi disponibles
-- Simulación de captura de handshake de autenticación
-- Ataque de diccionario utilizando la lista rockyou.txt
-- Análisis en tiempo real de fortaleza de contraseñas
-- Progreso visual con estadísticas de intentos
-- Recomendaciones de medidas de protección
-
-### **Flujo de Ejecución:**
-1. Fase de reconocimiento: Identifica redes disponibles
-2. Fase de captura: Simula obtención de handshake WPA2
-3. Fase de ataque: Prueba sistemáticamente contraseñas del diccionario
-4. Fase de resultados: Muestra contraseña comprometida y métricas
-5. Fase educativa: Explica medidas defensivas
-
-### **Impacto en el Taller:**
-- Tiempo estimado: 15-20 minutos
-- Nivel técnico: Básico
-- Demuestra: Vulnerabilidad de contraseñas débiles
-- Enseña: Importancia de autenticación robusta
-
----
-
-## **SCRIPT 2: NETWORK SCANNER**
+**Archivo:** `1-network_scanner.py`
 
 ### **Descripción:**
 Herramienta de descubrimiento y análisis de red que identifica dispositivos IoT y sus servicios expuestos.
@@ -86,9 +80,54 @@ Herramienta de descubrimiento y análisis de red que identifica dispositivos IoT
 - Demuestra: Técnicas de reconocimiento de red
 - Enseña: Importancia del inventario de activos
 
+### **Archivos Generados:**
+- `scan_results.log` - Reporte JSON con dispositivos descubiertos
+
+---
+
+## **SCRIPT 2: REAL DICTIONARY ATTACK**
+
+**Archivo:** `2-real_dictionary_attack.py`
+
+### **Descripción:**
+Ataque de fuerza bruta automatizado contra dispositivos IoT utilizando wordlists para comprometer credenciales débiles.
+
+### **Objetivos Educativos:**
+- Demostrar vulnerabilidad de contraseñas débiles en dispositivos IoT
+- Enseñar técnicas de fuerza bruta con diccionarios
+- Mostrar la importancia de contraseñas robustas
+- Illustrar descubrimiento automático de dispositivos vulnerables
+
+### **Funcionalidades Principales:**
+- Descubrimiento automático de dispositivos IoT en la red
+- Ataques de diccionario usando rockyou.txt
+- Prueba de múltiples usuarios comunes (admin, user, root, etc.)
+- Progreso en tiempo real con estadísticas
+- Guardado automático de credenciales comprometidas
+- Generación de archivo JSON con resultados
+
+### **Flujo de Ejecución:**
+1. Descubrimiento: Escanea la red local para encontrar dispositivos IoT
+2. Carga de wordlist: Lee contraseñas desde rockyou.txt
+3. Ataque por dispositivo: Prueba credenciales en cada dispositivo encontrado
+4. Validación: Verifica credenciales exitosas mediante autenticación HTTP
+5. Almacenamiento: Guarda credenciales comprometidas en JSON
+6. Reporte: Muestra resumen de dispositivos comprometidos
+
+### **Impacto en el Taller:**
+- Tiempo estimado: 20-30 minutos
+- Nivel técnico: Intermedio
+- Demuestra: Vulnerabilidad de autenticación débil
+- Enseña: Importancia de políticas de contraseñas robustas
+
+### **Archivos Generados:**
+- `compromised_devices.json` - Credenciales comprometidas (requerido para scripts siguientes)
+
 ---
 
 ## **SCRIPT 3: IOT ANALYZER**
+
+**Archivo:** `3-iot_analyzer.py`
 
 ### **Descripción:**
 Analizador ofensivo que identifica, evalúa y explota vulnerabilidades comunes en dispositivos IoT.
@@ -124,9 +163,14 @@ Analizador ofensivo que identifica, evalúa y explota vulnerabilidades comunes e
 - Demuestra: Explotación real de vulnerabilidades IoT
 - Enseña: Consecuencias de configuraciones inseguras
 
+### **Archivos Generados:**
+- `vulnerability_report.txt` - Reporte detallado de vulnerabilidades encontradas
+
 ---
 
 ## **SCRIPT 4: BOTNET DEMO**
+
+**Archivo:** `4-botnet_demo.py`
 
 ### **Descripción:**
 Simulador de botnet que coordina múltiples dispositivos IoT comprometidos para demostrar ataques coordinados.
@@ -162,9 +206,61 @@ Simulador de botnet que coordina múltiples dispositivos IoT comprometidos para 
 - Demuestra: Amenazas avanzadas y coordinadas
 - Enseña: Detección y mitigación de botnets
 
+### **Requisitos Previos:**
+- Archivo `compromised_devices.json` generado por Script 2
+
 ---
 
-## **SCRIPT 5: SECURITY TOOLKIT**
+## **SCRIPT 5: BOTNET WEB CONTROLLER**
+
+**Archivo:** `5-botnet_web_controller.py`
+
+### **Descripción:**
+Panel web interactivo para monitorear y controlar dispositivos IoT comprometidos en tiempo real.
+
+### **Objetivos Educativos:**
+- Demostrar interfaces de comando y control (C&C) modernas
+- Mostrar visualización de datos en tiempo real
+- Enseñar sobre monitoreo de actividad maliciosa
+- Illustrar dashboards de gestión de botnets
+
+### **Funcionalidades Principales:**
+- Interfaz web moderna y responsive
+- Monitoreo en tiempo real de estado de bots
+- Estadísticas visuales de actividad
+- Control remoto de dispositivos comprometidos
+- Actualización automática de estado
+- Visualización de métricas de ataque
+
+### **Flujo de Ejecución:**
+1. Inicialización: Carga dispositivos desde compromised_devices.json
+2. Servidor web: Inicia servidor Flask en puerto 5000
+3. Dashboard: Muestra estado de todos los bots
+4. Monitoreo: Actualiza estado en tiempo real
+5. Control: Permite enviar comandos a dispositivos
+6. Estadísticas: Muestra métricas y actividad
+
+### **Uso:**
+```bash
+python3 5-botnet_web_controller.py
+# Luego abrir http://localhost:5000 en el navegador
+```
+
+### **Impacto en el Taller:**
+- Tiempo estimado: 10-15 minutos
+- Nivel técnico: Intermedio
+- Demuestra: Interfaces modernas de C&C
+- Enseña: Visualización de amenazas en tiempo real
+
+### **Requisitos Previos:**
+- Archivo `compromised_devices.json` generado por Script 2
+- Biblioteca Flask instalada (`pip3 install flask`)
+
+---
+
+## **SCRIPT 6: SECURITY TOOL**
+
+**Archivo:** `6-security_tool.py`
 
 ### **Descripción:**
 Conjunto de herramientas defensivas para proteger infraestructuras IoT mediante monitoreo y hardening.
@@ -209,14 +305,15 @@ Conjunto de herramientas defensivas para proteger infraestructuras IoT mediante 
 - Caso de estudio: Botnet Mirai
 - Contexto del laboratorio práctico
 
-### **Fase 2: Ofensiva Controlada (65 minutos)**
-- Script 1: Ataque a infraestructura WiFi (15 min)
-- Script 2: Reconocimiento de red (10 min) 
-- Script 3: Análisis y explotación (25 min)
-- Script 4: Demostración de botnet (15 min)
+### **Fase 2: Ofensiva Controlada (75 minutos)**
+- Script 1: Reconocimiento de red (10-15 min)
+- Script 2: Ataque de fuerza bruta (20-30 min)
+- Script 3: Análisis y explotación (20-25 min)
+- Script 4: Demostración de botnet (15-20 min)
+- Script 5: Panel web de control (10-15 min)
 
-### **Fase 3: Defensa Práctica (10 minutos)**
-- Script 5: Herramientas defensivas (10 min)
+### **Fase 3: Defensa Práctica (10-15 minutos)**
+- Script 6: Herramientas defensivas (10-15 min)
 
 ### **Resultados de Aprendizaje:**
 - Comprensión de vectores de ataque IoT
@@ -239,6 +336,99 @@ El taller debe realizarse en redes aisladas con dispositivos propiedad de la org
 
 ### **Ética Profesional:**
 Se enfatiza la importancia del consentimiento y la autorización en todas las actividades de seguridad.
+
+---
+
+## **INSTALACIÓN Y CONFIGURACIÓN**
+
+### **Preparación del Entorno:**
+
+1. **Instalar herramientas en Kali Linux:**
+```bash
+sudo apt update
+sudo apt install -y hydra nmap curl python3 python3-pip
+```
+
+2. **Verificar wordlist rockyou.txt:**
+```bash
+ls -lh /usr/share/wordlists/rockyou.txt
+# Si no existe, descomprimir:
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+```
+
+3. **Instalar bibliotecas Python:**
+```bash
+pip3 install requests flask scapy
+```
+
+4. **Configurar dispositivos ESP32:**
+   - Abrir archivos `.ino` en Arduino IDE
+   - Configurar credenciales WiFi
+   - Subir firmware a cada ESP32
+   - Anotar IPs asignadas
+
+5. **Verificar conectividad:**
+```bash
+ping -c 4 192.168.86.114
+ping -c 4 192.168.86.115
+curl -I http://192.168.86.114/
+curl -I http://192.168.86.115/
+```
+
+### **Orden de Ejecución de Scripts:**
+
+Los scripts deben ejecutarse en el siguiente orden para que funcionen correctamente:
+
+1. `1-network_scanner.py` - Descubre dispositivos
+2. `2-real_dictionary_attack.py` - Compromete credenciales (genera `compromised_devices.json`)
+3. `3-iot_analyzer.py` - Analiza vulnerabilidades
+4. `4-botnet_demo.py` - Demuestra botnet (requiere `compromised_devices.json`)
+5. `5-botnet_web_controller.py` - Panel web (requiere `compromised_devices.json`)
+6. `6-security_tool.py` - Herramientas defensivas
+
+### **Archivos Generados por los Scripts:**
+
+- `scan_results.log` - Resultados del escaneo de red (Script 1)
+- `compromised_devices.json` - Credenciales comprometidas (Script 2, requerido por Scripts 4 y 5)
+- `vulnerability_report.txt` - Reporte de vulnerabilidades (Script 3)
+- `security_report.txt` - Reporte de seguridad (Script 6)
+
+---
+
+## **DETALLES TÉCNICOS ADICIONALES**
+
+### **Protocolos y Tecnologías Utilizadas:**
+
+- **HTTP Basic Authentication:** Autenticación utilizada por los dispositivos ESP32
+- **REST API:** Endpoints HTTP para control de dispositivos
+- **Flask:** Framework web para el panel de control
+- **Concurrent Processing:** Escaneo paralelo con ThreadPoolExecutor
+- **JSON:** Formato de almacenamiento de datos
+
+### **Rangos de Red:**
+
+- Los scripts detectan automáticamente la red local
+- Por defecto asumen red /24 (254 hosts)
+- Pueden configurarse rangos específicos si es necesario
+
+### **Puertos Escaneados:**
+
+- Puerto 80 (HTTP) - Principal
+- Puerto 443 (HTTPS) - Si está disponible
+- Puerto 8080 (HTTP alternativo) - Si está disponible
+
+### **Credenciales por Defecto Probadas:**
+
+- admin:admin, admin:123456, admin:password
+- user:user, user:12345, user:123456
+- root:root, root:123456
+- guest:guest
+
+### **Endpoints Comunes Escaneados:**
+
+- `/`, `/admin`, `/config`, `/settings`
+- `/api`, `/control`, `/status`, `/info`
+- `/lights`, `/tv`, `/ac`, `/door`, `/alarm`
 
 ---
 

