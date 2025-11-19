@@ -16,8 +16,8 @@ const char* password = "Password1";
 WebServer server(80);
 
 // Credenciales VULNERABLES
-const char* www_username = "user";
-const char* www_password = "77777";
+const char* www_username = "admin";
+const char* www_password = "101010";
 
 // Estado dispositivos entrada/garage
 bool puertaGarageStatus = false;
@@ -225,7 +225,6 @@ void setup() {
   Serial.println("1. Dominio: http://controlentrada.local");
   Serial.println("2. IP: http://" + WiFi.localIP().toString());
   Serial.println("====================================");
-  Serial.println("Credenciales: user / 77777");
   Serial.println("Sistema de Entrada y Garage listo");
 }
 
