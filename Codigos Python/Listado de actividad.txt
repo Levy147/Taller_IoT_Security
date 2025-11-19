@@ -1,0 +1,239 @@
+ok entonces siguiendo esto vamos paso a paso para hacerlo 563 🎯 PLAN DE TRABAJO - TALLER DE SEGURIDAD IoT
+
+ 📋 FASE 1: PREPARACIÓN DEL ENTORNO
+
+ 1.1 Configuración de Red
+- [ ] Verificar que todos los ESP32 estén conectados a la red WiFi
+- [ ] Confirmar las IPs de los dispositivos IoT (192.168.86.114 y 192.168.86.115)
+- [ ] Verificar conectividad básica con `ping`
+
+ 1.2 Instalación de Herramientas en Kali Linux
+- [ ] Verificar que Hydra esté instalado
+- [ ] Confirmar que rockyou.txt esté disponible
+- [ ] Probar herramientas básicas (curl, nmap)
+- [ ] Verificar Python 3 y bibliotecas necesarias
+
+Comandos: 
+hydra -h
+ls /usr/share/wordlists/rockyou.txt
+curl --version
+nmap --version
+python3 --version
+pip3 install requests flask
+
+---
+
+ 🔍 FASE 2: RECONOCIMIENTO Y ESCANEO
+
+ 2.1 Descubrimiento de Dispositivos
+- [ ] Escanear la red en busca de dispositivos IoT
+- [ ] Identificar servicios activos (puerto 80)
+- [ ] Verificar que las páginas web respondan
+
+Comandos:
+```bash
+nmap -p 80,443 192.168.86.0/24 --open
+curl -I http://192.168.86.114/
+curl -I http://192.168.86.115/
+```
+
+ 2.2 Escaneo Avanzado con Python
+- [ ] Ejecutar escáner de red automatizado
+- [ ] Identificar tipos de dispositivos IoT
+- [ ] Generar inventario de red
+
+Comandos:
+```bash
+python3 network_scanner.py
+```
+
+---
+
+ 🔓 FASE 3: ATAQUES DE FUERZA BRUTA
+
+ 3.1 Dispositivo 1 - Control de Sala (192.168.86.114)
+- [ ] Probar usuario conocido: `admin`
+- [ ] Ejecutar fuerza bruta con rockyou.txt
+- [ ] Documentar credenciales encontradas
+
+Comandos:
+```bash
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.86.114 http-get / -V -t 5 -f
+```
+
+ 3.2 Dispositivo 2 - Control de Entrada (192.168.86.115)
+- [ ] Enumerar usuarios válidos
+- [ ] Ejecutar fuerza bruta para encontrar usuario y contraseña
+- [ ] Documentar credenciales encontradas
+
+Comandos:
+```bash
+echo -e "admin\nuser\nroot\nguest\noperator" > iot_users.txt
+hydra -L iot_users.txt -P /usr/share/wordlists/rockyou.txt 192.168.86.115 http-get / -V -t 5 -f
+```
+
+ 3.3 Fuerza Bruta con Python (Alternativa)
+- [ ] Ejecutar ataque de diccionario inteligente
+- [ ] Generar archivo de dispositivos comprometidos
+
+Comandos:
+```bash
+python3 real_dictionary_attack.py
+```
+
+---
+
+ 🎯 FASE 4: EXPLOTACIÓN Y ACCESO
+
+ 4.1 Verificación de Acceso
+- [ ] Probar credenciales encontradas manualmente
+- [ ] Acceder a las interfaces web de control
+- [ ] Verificar funcionalidades disponibles
+
+Comandos:
+```bash
+curl -u admin:123456 http://192.168.86.114/
+curl -u user:12345 http://192.168.86.115/
+```
+
+ 4.2 Análisis de Vulnerabilidades con Python
+- [ ] Ejecutar analizador de vulnerabilidades
+- [ ] Identificar endpoints expuestos
+- [ ] Probar controles remotos
+
+Comandos:
+```bash
+python3 iot_analyzer.py
+```
+
+ 4.3 Control de Dispositivos
+- [ ] Probar controles de luces, TV, aire acondicionado
+- [ ] Probar controles de puertas y sistema de alarma
+- [ ] Documentar capacidades de control obtenidas
+
+---
+
+ 🤖 FASE 5: DEMOSTRACIÓN BOTNET
+
+ 5.1 Configuración de Botnet
+- [ ] Crear archivo `compromised_devices.json` con credenciales
+- [ ] Verificar que todos los bots estén accesibles
+- [ ] Configurar sistema de comando y control
+
+ 5.2 Ataque DDoS Coordinado
+- [ ] Ejecutar script de botnet
+- [ ] Demostrar ataque DDoS simulado
+- [ ] Mostrar estadísticas en tiempo real
+
+Comandos:
+```bash
+python3 botnet_demo.py
+```
+
+ 5.3 Panel Web de Control
+- [ ] Iniciar interfaz web de la botnet
+- [ ] Monitorear bots en tiempo real
+- [ ] Controlar dispositivos desde el panel web
+
+Comandos:
+```bash
+python3 botnet_web_controller.py
+```
+
+---
+
+ 🛡️ FASE 6: MEDIDAS DEFENSIVAS
+
+ 6.1 Análisis de Vulnerabilidades
+- [ ] Ejecutar escáner de seguridad
+- [ ] Identificar puntos débiles
+- [ ] Documentar recomendaciones
+
+Comandos:
+```bash
+python3 security_tool.py
+```
+
+ 6.2 Hardening de Dispositivos
+- [ ] Cambiar credenciales por defecto
+- [ ] Deshabilitar servicios innecesarios
+- [ ] Implementar autenticación fuerte
+- [ ] Aplicar mejores prácticas de seguridad
+
+---
+
+ 📊 FASE 7: DOCUMENTACIÓN Y CIERRE
+
+ 7.1 Recopilación de Resultados
+- [ ] Documentar todas las credenciales encontradas
+- [ ] Registrar vectores de ataque exitosos
+- [ ] Compilar estadísticas de fuerza bruta
+- [ ] Generar reportes de vulnerabilidades
+
+Comandos:
+```bash
+cat compromised_devices.json
+ls -la .json .log .txt
+```
+
+ 7.2 Conclusiones y Recomendaciones
+- [ ] Identificar lecciones aprendidas
+- [ ] Elaborar lista de mejores prácticas
+- [ ] Preparar reporte final del taller
+- [ ] Discutir implicaciones de seguridad reales
+
+---
+
+ ⏱️ CRONOGRAMA ESTIMADO
+
+| Fase | Duración | Actividades Principales |
+|------|----------|------------------------|
+| 1. Preparación | 20 min | Configuración de red y herramientas |
+| 2. Reconocimiento | 25 min | Escaneo y descubrimiento |
+| 3. Fuerza Bruta | 35 min | Ataques a ambos dispositivos |
+| 4. Explotación | 30 min | Acceso y control de dispositivos |
+| 5. Botnet | 30 min | Demostración de ataque coordinado |
+| 6. Defensas | 25 min | Análisis y hardening |
+| 7. Cierre | 15 min | Documentación y conclusiones |
+
+Total: 3 horas
+
+---
+
+ ✅ CHECKLIST DE ÉXITO
+
+- [ ] Ambos dispositivos IoT comprometidos
+- [ ] Credenciales documentadas para ambos dispositivos  
+- [ ] Control completo demostrado sobre sistemas
+- [ ] Ataque DDoS coordinado ejecutado
+- [ ] Panel web de botnet funcionando
+- [ ] Análisis de vulnerabilidades completado
+- [ ] Medidas defensivas implementadas
+- [ ] Reporte final completado
+
+---
+
+ 🚨 MATERIALES NECESARIOS
+
+- [ ] Kali Linux funcionando
+- [ ] 2x ESP32 con firmware vulnerable
+- [ ] Red WiFi "Home_Secure_Network"
+- [ ] Lista de comandos preparada
+- [ ] Scripts Python de demostración:
+  - [ ] `network_scanner.py`
+  - [ ] `real_dictionary_attack.py`
+  - [ ] `iot_analyzer.py`
+  - [ ] `botnet_demo.py`
+  - [ ] `botnet_web_controller.py`
+  - [ ] `security_tool.py`
+
+---
+
+ 📁 ARCHIVOS GENERADOS
+
+- [ ] `compromised_devices.json` - Credenciales comprometidas
+- [ ] `scan_results.log` - Resultados de escaneo
+- [ ] `vulnerability_report.txt` - Reporte de vulnerabilidades
+- [ ] `botnet_stats.json` - Estadísticas de la botnet
+
+¿Listo para comenzar el taller? 🎯

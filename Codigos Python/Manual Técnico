@@ -1,0 +1,245 @@
+# **MANUAL TÉCNICO - TALLER DE SEGURIDAD IoT**
+
+## **DESCRIPCIÓN GENERAL DEL TALLER**
+
+### **Objetivo Principal:**
+Demostrar el ciclo completo de seguridad IoT, desde el reconocimiento hasta la protección, utilizando Python como herramienta principal.
+
+### **Público Objetivo:**
+- Estudiantes de ciberseguridad
+- Desarrolladores IoT
+- Administradores de sistemas
+- Entusiastas de la seguridad
+
+### **Requisitos Técnicos:**
+- Kali Linux o distribución Linux con Python 3.8+
+- 2 dispositivos ESP32 programados
+- Router Google WiFi configurado
+- Conocimientos básicos de Python
+
+---
+
+## **SCRIPT 1: WIFI CRACKER**
+
+### **Descripción:**
+Simulador de ataque de fuerza bruta contra redes WiFi WPA2 que demuestra la vulnerabilidad de contraseñas débiles.
+
+### **Objetivos Educativos:**
+- Mostrar cómo funcionan los ataques de diccionario a redes inalámbricas
+- Demostrar la importancia de contraseñas robustas
+- Enseñar sobre el proceso de captura de handshake WPA2
+- Illustrar el uso de wordlists en ataques de seguridad
+
+### **Funcionalidades Principales:**
+- Detección automática de redes WiFi disponibles
+- Simulación de captura de handshake de autenticación
+- Ataque de diccionario utilizando la lista rockyou.txt
+- Análisis en tiempo real de fortaleza de contraseñas
+- Progreso visual con estadísticas de intentos
+- Recomendaciones de medidas de protección
+
+### **Flujo de Ejecución:**
+1. Fase de reconocimiento: Identifica redes disponibles
+2. Fase de captura: Simula obtención de handshake WPA2
+3. Fase de ataque: Prueba sistemáticamente contraseñas del diccionario
+4. Fase de resultados: Muestra contraseña comprometida y métricas
+5. Fase educativa: Explica medidas defensivas
+
+### **Impacto en el Taller:**
+- Tiempo estimado: 15-20 minutos
+- Nivel técnico: Básico
+- Demuestra: Vulnerabilidad de contraseñas débiles
+- Enseña: Importancia de autenticación robusta
+
+---
+
+## **SCRIPT 2: NETWORK SCANNER**
+
+### **Descripción:**
+Herramienta de descubrimiento y análisis de red que identifica dispositivos IoT y sus servicios expuestos.
+
+### **Objetivos Educativos:**
+- Enseñar técnicas de reconnaissance y footprinting de red
+- Mostrar identificación de servicios y puertos abiertos
+- Demostrar fingerprinting de dispositivos IoT
+- Illustrar creación de inventarios de activos de red
+
+### **Funcionalidades Principales:**
+- Escaneo paralelo de rangos de IP completos
+- Detección de puertos y servicios activos
+- Análisis de banners HTTP y respuestas de servicios
+- Clasificación automática de tipos de dispositivos
+- Identificación específica de objetivos IoT conocidos
+- Generación de reportes de inventario detallados
+
+### **Flujo de Ejecución:**
+1. Configuración inicial: Define rangos de red a escanear
+2. Escaneo paralelo: Examina múltiples IPs simultáneamente
+3. Análisis de servicios: Identifica puertos y protocolos activos
+4. Fingerprinting: Determina tipos de dispositivos y sistemas
+5. Identificación: Localiza objetivos IoT específicos
+6. Reporte: Genera inventario completo de la red
+
+### **Impacto en el Taller:**
+- Tiempo estimado: 10-15 minutos
+- Nivel técnico: Intermedio
+- Demuestra: Técnicas de reconocimiento de red
+- Enseña: Importancia del inventario de activos
+
+---
+
+## **SCRIPT 3: IOT ANALYZER**
+
+### **Descripción:**
+Analizador ofensivo que identifica, evalúa y explota vulnerabilidades comunes en dispositivos IoT.
+
+### **Objetivos Educativos:**
+- Demostrar explotación de credenciales por defecto
+- Mostrar riesgos de endpoints y servicios expuestos
+- Enseñar sobre fugas de información en dispositivos IoT
+- Illustrar consecuencias de controles remotos comprometidos
+- Demostrar técnicas de post-explotación en entornos IoT
+
+### **Funcionalidades Principales:**
+- Prueba automatizada de credenciales por defecto
+- Escaneo de endpoints web sin autenticación
+- Simulación de ataques de fuerza bruta
+- Explotación de controles remotos de dispositivos
+- Análisis de fugas de información en configuraciones
+- Evaluación de configuraciones inseguras
+- Generación de reportes de vulnerabilidades detallados
+
+### **Flujo de Ejecución:**
+1. Verificación de conectividad: Confirma acceso a dispositivos
+2. Prueba de autenticación: Valida credenciales por defecto
+3. Escaneo de endpoints: Busca servicios no autenticados
+4. Análisis de vulnerabilidades: Identifica configuraciones riesgosas
+5. Explotación controlada: Demuestra acceso no autorizado
+6. Evaluación de impacto: Documenta consecuencias potenciales
+7. Generación de reportes: Crea documentación de hallazgos
+
+### **Impacto en el Taller:**
+- Tiempo estimado: 20-25 minutos
+- Nivel técnico: Avanzado
+- Demuestra: Explotación real de vulnerabilidades IoT
+- Enseña: Consecuencias de configuraciones inseguras
+
+---
+
+## **SCRIPT 4: BOTNET DEMO**
+
+### **Descripción:**
+Simulador de botnet que coordina múltiples dispositivos IoT comprometidos para demostrar ataques coordinados.
+
+### **Objetivos Educativos:**
+- Mostrar el poder y escalabilidad de las botnets IoT
+- Demostrar arquitecturas de comando y control (C&C)
+- Enseñar sobre ataques DDoS coordinados
+- Illustrar detección y monitoreo de actividad maliciosa
+- Demostrar el impacto de dispositivos comprometidos en masa
+
+### **Funcionalidades Principales:**
+- Reclutamiento automático de dispositivos comprometidos
+- Dashboard de control en tiempo real
+- Coordinación de ataques DDoS distribuidos
+- Monitoreo de métricas y estadísticas en vivo
+- Interfaz interactiva de comando y control
+- Simulación de tráfico malicioso coordinado
+- Generación de reportes de actividad de botnet
+
+### **Flujo de Ejecución:**
+1. Descubrimiento: Identifica dispositivos comprometidos disponibles
+2. Reclutamiento: Establece comunicación con bots
+3. Configuración: Prepara infraestructura de comando y control
+4. Coordinación: Ejecuta ataques simultáneos desde múltiples bots
+5. Monitoreo: Supervisa métricas y efectividad en tiempo real
+6. Control: Permite operación interactiva de la botnet
+7. Reporte: Documenta capacidades y impacto demostrado
+
+### **Impacto en el Taller:**
+- Tiempo estimado: 15-20 minutos
+- Nivel técnico: Intermedio
+- Demuestra: Amenazas avanzadas y coordinadas
+- Enseña: Detección y mitigación de botnets
+
+---
+
+## **SCRIPT 5: SECURITY TOOLKIT**
+
+### **Descripción:**
+Conjunto de herramientas defensivas para proteger infraestructuras IoT mediante monitoreo y hardening.
+
+### **Objetivos Educativos:**
+- Enseñar medidas defensivas prácticas para entornos IoT
+- Mostrar técnicas de monitoreo continuo de red
+- Demostrar detección de dispositivos no autorizados
+- Illustrar evaluación de configuraciones seguras
+- Proporcionar recomendaciones de hardening específicas
+
+### **Funcionalidades Principales:**
+- Descubrimiento automático y catalogación de dispositivos
+- Análisis continuo de vulnerabilidades
+- Monitoreo en tiempo real de actividad de red
+- Detección de cambios y anomalías en la infraestructura
+- Evaluación de configuraciones de seguridad
+- Generación de recomendaciones de hardening personalizadas
+- Creación de reportes de estado de seguridad
+
+### **Flujo de Ejecución:**
+1. Inventario inicial: Escanea y cataloga todos los dispositivos de red
+2. Evaluación de base: Establece línea base de seguridad
+3. Monitoreo continuo: Vigila actividad y cambios en la red
+4. Detección de anomalías: Identifica comportamientos sospechosos
+5. Análisis de vulnerabilidades: Evalúa configuraciones riesgosas
+6. Generación de recomendaciones: Crea guías de hardening específicas
+7. Reporte de estado: Documenta postura de seguridad actual
+
+### **Impacto en el Taller:**
+- Tiempo estimado: 10-15 minutos
+- Nivel técnico: Intermedio
+- Demuestra: Herramientas defensivas prácticas
+- Enseña: Monitoreo proactivo y hardening
+
+---
+
+## **FLUJO PEDAGÓGICO COMPLETO**
+
+### **Fase 1: Concientización (15 minutos)**
+- Introducción a riesgos IoT
+- Caso de estudio: Botnet Mirai
+- Contexto del laboratorio práctico
+
+### **Fase 2: Ofensiva Controlada (65 minutos)**
+- Script 1: Ataque a infraestructura WiFi (15 min)
+- Script 2: Reconocimiento de red (10 min) 
+- Script 3: Análisis y explotación (25 min)
+- Script 4: Demostración de botnet (15 min)
+
+### **Fase 3: Defensa Práctica (10 minutos)**
+- Script 5: Herramientas defensivas (10 min)
+
+### **Resultados de Aprendizaje:**
+- Comprensión de vectores de ataque IoT
+- Habilidades prácticas de evaluación de seguridad
+- Conocimiento de herramientas defensivas
+- Conciencia de mejores prácticas de seguridad
+
+---
+
+## **CONSIDERACIONES DE SEGURIDAD**
+
+### **Entorno Controlado:**
+Todos los scripts están diseñados para ejecutarse exclusivamente en entornos de laboratorio controlados con dispositivos de propiedad del instructor.
+
+### **Propósito Educativo:**
+Las herramientas tienen fines exclusivamente educativos y de concientización sobre seguridad IoT.
+
+### **Cumplimiento Legal:**
+El taller debe realizarse en redes aisladas con dispositivos propiedad de la organización educativa.
+
+### **Ética Profesional:**
+Se enfatiza la importancia del consentimiento y la autorización en todas las actividades de seguridad.
+
+---
+
+**Este manual técnico proporciona la base completa para entender y ejecutar el taller de seguridad IoT de manera educativa y responsable.**
