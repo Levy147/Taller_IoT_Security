@@ -122,13 +122,59 @@ ls -lh /usr/share/wordlists/rockyou.txt
 
 ### **Paso 1.6: Instalar Bibliotecas Python**
 
+**⚠️ IMPORTANTE:** En Ubuntu/Debian recientes, puede aparecer el error "externally-managed-environment". Tienes dos opciones:
+
+#### **OPCIÓN A: Usar --break-system-packages (Rápido para talleres)** ⭐ RECOMENDADO PARA TALLERES
+
 ```bash
-# Instalar dependencias Python
-pip3 install requests flask scapy
+# Instalar dependencias Python con flag especial
+pip3 install --break-system-packages requests flask scapy
 
 # Verificar instalación
 python3 -c "import requests; import flask; import scapy; print('Todas las bibliotecas instaladas correctamente')"
 ```
+
+**Nota:** Esta opción es segura para entornos de taller/educativos donde no afectará otros proyectos.
+
+#### **OPCIÓN B: Usar Entorno Virtual (Mejor práctica)**
+
+```bash
+# Instalar python3-venv si no está instalado
+sudo apt install -y python3-venv
+
+# Crear entorno virtual
+python3 -m venv ~/iot_taller_env
+
+# Activar entorno virtual
+source ~/iot_taller_env/bin/activate
+
+# Instalar dependencias en el entorno virtual
+pip install requests flask scapy
+
+# Verificar instalación
+python -c "import requests; import flask; import scapy; print('Todas las bibliotecas instaladas correctamente')"
+```
+
+**⚠️ IMPORTANTE:** Si usas entorno virtual, debes activarlo cada vez que abras una nueva terminal:
+```bash
+source ~/iot_taller_env/bin/activate
+```
+
+Y usar `python` en lugar de `python3` cuando el entorno esté activado.
+
+#### **OPCIÓN C: Instalar desde repositorios del sistema (si están disponibles)**
+
+```bash
+# Intentar instalar desde repositorios
+sudo apt install -y python3-requests python3-flask python3-scapy
+
+# Verificar qué se instaló
+python3 -c "import requests; print('requests OK')" 2>/dev/null || echo "requests no disponible"
+python3 -c "import flask; print('flask OK')" 2>/dev/null || echo "flask no disponible"
+python3 -c "import scapy; print('scapy OK')" 2>/dev/null || echo "scapy no disponible"
+```
+
+**Recomendación para el taller:** Usa la **OPCIÓN A** (`--break-system-packages`) ya que es más rápida y no requiere activar entornos virtuales en cada terminal.
 
 ### **Paso 1.7: Acceder a Archivos de Windows desde WSL**
 
@@ -683,14 +729,33 @@ netsh advfirewall show allprofiles
 netsh advfirewall firewall add rule name="Python" dir=in action=allow program="C:\Python\python.exe"
 ```
 
-### **Problema 3: "Error al importar módulos Python"**
+### **Problema 3: "Error al importar módulos Python" o "externally-managed-environment"**
 
-**Solución:**
+**Este es un error común en Ubuntu/Debian recientes (PEP 668).**
+
+**Solución Rápida (Recomendada para talleres):**
 ```bash
-# En WSL:
-pip3 install --upgrade requests flask
+# En WSL - usar flag --break-system-packages
+pip3 install --break-system-packages --upgrade requests flask scapy
 
-# En Windows:
+# Verificar instalación
+python3 -c "import requests; import flask; import scapy; print('OK')"
+```
+
+**Solución con Entorno Virtual (Mejor práctica):**
+```bash
+# Crear y activar entorno virtual
+python3 -m venv ~/iot_taller_env
+source ~/iot_taller_env/bin/activate
+
+# Instalar dependencias
+pip install requests flask scapy
+
+# Recordar activar el entorno cada vez: source ~/iot_taller_env/bin/activate
+```
+
+**Solución Windows:**
+```cmd
 pip install --upgrade requests flask
 ```
 
@@ -824,8 +889,10 @@ dir *.log *.json *.txt
 # Script de instalación automatizada
 wsl --install
 Write-Host "Reinicia tu computadora y luego ejecuta el siguiente comando en Ubuntu:"
-Write-Host "sudo apt update && sudo apt install -y hydra nmap curl python3 python3-pip git wordlists && pip3 install requests flask scapy"
+Write-Host "sudo apt update && sudo apt install -y hydra nmap curl python3 python3-pip git wordlists && pip3 install --break-system-packages requests flask scapy"
 ```
+
+**Nota:** El flag `--break-system-packages` es necesario en Ubuntu/Debian recientes debido a PEP 668.
 
 #### **Para Windows Nativo:**
 Crear un script batch que:
