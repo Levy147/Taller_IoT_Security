@@ -128,13 +128,21 @@ ls -lh /usr/share/wordlists/rockyou.txt
 
 ```bash
 # Instalar dependencias Python con flag especial
-pip3 install --break-system-packages requests flask scapy
+# Si hay conflicto con blinker (instalado por el sistema), usar --ignore-installed
+pip3 install --break-system-packages --ignore-installed blinker requests flask scapy
+
+# Si el comando anterior falla, instalar por separado:
+pip3 install --break-system-packages requests
+pip3 install --break-system-packages --ignore-installed blinker flask
+pip3 install --break-system-packages scapy
 
 # Verificar instalación
 python3 -c "import requests; import flask; import scapy; print('Todas las bibliotecas instaladas correctamente')"
 ```
 
 **Nota:** Esta opción es segura para entornos de taller/educativos donde no afectará otros proyectos.
+
+**Si aparece error con blinker:** El flag `--ignore-installed` evita el conflicto con paquetes instalados por el sistema.
 
 #### **OPCIÓN B: Usar Entorno Virtual (Mejor práctica)**
 
@@ -741,6 +749,24 @@ pip3 install --break-system-packages --upgrade requests flask scapy
 # Verificar instalación
 python3 -c "import requests; import flask; import scapy; print('OK')"
 ```
+
+### **Problema 3.1: "Cannot uninstall blinker" o "RECORD file not found"**
+
+**Este error ocurre cuando hay conflicto entre paquetes del sistema y pip.**
+
+**Solución:**
+```bash
+# Instalar flask ignorando el conflicto de blinker
+pip3 install --break-system-packages --ignore-installed blinker flask
+
+# O instalar todo junto
+pip3 install --break-system-packages --ignore-installed blinker requests flask scapy
+
+# Verificar instalación
+python3 -c "import flask; print('Flask OK')"
+```
+
+**Explicación:** `--ignore-installed` le dice a pip que ignore la versión instalada por el sistema y use la nueva versión sin intentar desinstalar la anterior.
 
 **Solución con Entorno Virtual (Mejor práctica):**
 ```bash
