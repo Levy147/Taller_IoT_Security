@@ -264,9 +264,9 @@ graph TB
     R --> ESP2[ESP32 #2<br/>10.0.0.3]
     R --> ATK[Computadora Atacante<br/>10.0.0.100]
     
-    classDef router fill:#e1f5fe
-    classDef iot fill:#c8e6c9
-    classDef attacker fill:#ffcdd2
+    classDef router fill:#0f52aa
+    classDef iot fill:#24c929 
+    classDef attacker fill:#e23131
     
     class R router
     class ESP1,ESP2 iot
