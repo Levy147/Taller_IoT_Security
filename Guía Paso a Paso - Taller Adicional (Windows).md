@@ -1,42 +1,21 @@
-# **GUÍA PASO A PASO - TALLER ADICIONAL DE SEGURIDAD IoT (WINDOWS)**
+# **GUÍA PASO A PASO - TALLER ADICIONAL DE SEGURIDAD IoT (WSL)**
 
 ## **ÍNDICE**
-1. [Opciones de Instalación](#opciones-de-instalación)
-2. [OPCIÓN 1: Usando WSL (Recomendado)](#opción-1-usando-wsl-recomendado)
-3. [OPCIÓN 2: Windows Nativo](#opción-2-windows-nativo)
-4. [Configuración Inicial](#configuración-inicial)
-5. [Fase 1: Reconocimiento](#fase-1-reconocimiento)
-6. [Fase 2: Ataque y Compromiso](#fase-2-ataque-y-compromiso)
-7. [Fase 3: Análisis y Explotación](#fase-3-análisis-y-explotación)
-8. [Fase 4: Demostración de Botnet](#fase-4-demostración-de-botnet)
-9. [Fase 5: Panel Web de Control](#fase-5-panel-web-de-control)
-10. [Fase 6: Herramientas Defensivas](#fase-6-herramientas-defensivas)
-11. [Ejercicios Adicionales](#ejercicios-adicionales)
-12. [Solución de Problemas Comunes](#solución-de-problemas-comunes)
-13. [Verificación Final](#verificación-final)
+1. [Preparación del Entorno WSL](#preparación-del-entorno-wsl)
+2. [Configuración Inicial](#configuración-inicial)
+3. [Fase 1: Reconocimiento](#fase-1-reconocimiento)
+4. [Fase 2: Ataque y Compromiso](#fase-2-ataque-y-compromiso)
+5. [Fase 3: Análisis y Explotación](#fase-3-análisis-y-explotación)
+6. [Fase 4: Demostración de Botnet](#fase-4-demostración-de-botnet)
+7. [Fase 5: Panel Web de Control](#fase-5-panel-web-de-control)
+8. [Fase 6: Herramientas Defensivas](#fase-6-herramientas-defensivas)
+9. [Ejercicios Adicionales](#ejercicios-adicionales)
+10. [Solución de Problemas Comunes](#solución-de-problemas-comunes)
+11. [Verificación Final](#verificación-final)
 
 ---
 
-## **OPCIONES DE INSTALACIÓN**
-
-Tienes dos opciones para ejecutar el taller en Windows:
-
-### **OPCIÓN 1: WSL (Windows Subsystem for Linux)** ⭐ RECOMENDADO
-- ✅ Compatibilidad total con todas las herramientas
-- ✅ Mismo entorno que Linux
-- ✅ Fácil instalación
-- ✅ Mejor rendimiento para herramientas de seguridad
-
-### **OPCIÓN 2: Windows Nativo**
-- ✅ No requiere instalación adicional
-- ⚠️ Algunas herramientas requieren alternativas
-- ⚠️ Configuración más compleja
-
-**Recomendación:** Usa WSL para una experiencia más fluida y sin problemas.
-
----
-
-## **OPCIÓN 1: USANDO WSL (RECOMENDADO)**
+## **PREPARACIÓN DEL ENTORNO WSL**
 
 ### **Paso 1.1: Verificar Requisitos del Sistema**
 
@@ -54,6 +33,7 @@ wsl --status
 - Windows 10 versión 2004 o superior, o Windows 11
 - Al menos 4GB de RAM disponible
 - Conexión a Internet
+- Acceso de administrador
 
 ### **Paso 1.2: Instalar WSL**
 
@@ -62,10 +42,6 @@ En PowerShell como **Administrador**:
 ```powershell
 # Instalar WSL con Ubuntu (versión más reciente)
 wsl --install
-
-# Si tienes una versión anterior de Windows, usa:
-# dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-# dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 ```
 
 **Después de ejecutar:**
@@ -85,11 +61,11 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
-### **Paso 1.4: Instalar Herramientas en WSL**
+### **Paso 1.4: Instalar Herramientas Necesarias**
 
 ```bash
 # Instalar herramientas necesarias
-sudo apt install -y hydra nmap curl python3 python3-pip git
+sudo apt install -y hydra nmap curl python3 python3-pip git wordlists
 
 # Verificar instalación
 python3 --version
@@ -99,12 +75,9 @@ hydra -h | head -5
 
 **Resultado esperado:** Todas las herramientas deberían mostrar sus versiones.
 
-### **Paso 1.5: Instalar Wordlist rockyou.txt**
+### **Paso 1.5: Verificar Wordlist rockyou.txt**
 
 ```bash
-# Instalar wordlists de Kali (incluye rockyou.txt)
-sudo apt install -y wordlists
-
 # Verificar que rockyou.txt existe
 ls -lh /usr/share/wordlists/rockyou.txt
 
@@ -122,13 +95,11 @@ ls -lh /usr/share/wordlists/rockyou.txt
 
 ### **Paso 1.6: Instalar Bibliotecas Python**
 
-**⚠️ IMPORTANTE:** En Ubuntu/Debian recientes, puede aparecer el error "externally-managed-environment". Tienes dos opciones:
-
-#### **OPCIÓN A: Usar --break-system-packages (Rápido para talleres)** ⭐ RECOMENDADO PARA TALLERES
+**⚠️ IMPORTANTE:** En Ubuntu/Debian recientes, puede aparecer el error "externally-managed-environment". Usa el siguiente comando:
 
 ```bash
-# Instalar dependencias Python con flag especial
-# Si hay conflicto con blinker (instalado por el sistema), usar --ignore-installed
+# Instalar dependencias Python con flags necesarios
+# Si hay conflicto con blinker, usar --ignore-installed
 pip3 install --break-system-packages --ignore-installed blinker requests flask scapy
 
 # Si el comando anterior falla, instalar por separado:
@@ -140,14 +111,13 @@ pip3 install --break-system-packages scapy
 python3 -c "import requests; import flask; import scapy; print('Todas las bibliotecas instaladas correctamente')"
 ```
 
-**Nota:** Esta opción es segura para entornos de taller/educativos donde no afectará otros proyectos.
+**Nota:** Los flags `--break-system-packages` y `--ignore-installed` son necesarios en Ubuntu/Debian recientes debido a PEP 668. Esto es seguro para entornos de taller/educativos.
 
-**Si aparece error con blinker:** El flag `--ignore-installed` evita el conflicto con paquetes instalados por el sistema.
-
-#### **OPCIÓN B: Usar Entorno Virtual (Mejor práctica)**
+**Alternativa con Entorno Virtual (Opcional):**
+Si prefieres usar un entorno virtual (mejor práctica):
 
 ```bash
-# Instalar python3-venv si no está instalado
+# Instalar python3-venv
 sudo apt install -y python3-venv
 
 # Crear entorno virtual
@@ -156,11 +126,11 @@ python3 -m venv ~/iot_taller_env
 # Activar entorno virtual
 source ~/iot_taller_env/bin/activate
 
-# Instalar dependencias en el entorno virtual
+# Instalar dependencias
 pip install requests flask scapy
 
-# Verificar instalación
-python -c "import requests; import flask; import scapy; print('Todas las bibliotecas instaladas correctamente')"
+# Verificar
+python -c "import requests; import flask; import scapy; print('OK')"
 ```
 
 **⚠️ IMPORTANTE:** Si usas entorno virtual, debes activarlo cada vez que abras una nueva terminal:
@@ -168,35 +138,19 @@ python -c "import requests; import flask; import scapy; print('Todas las bibliot
 source ~/iot_taller_env/bin/activate
 ```
 
-Y usar `python` en lugar de `python3` cuando el entorno esté activado.
-
-#### **OPCIÓN C: Instalar desde repositorios del sistema (si están disponibles)**
-
-```bash
-# Intentar instalar desde repositorios
-sudo apt install -y python3-requests python3-flask python3-scapy
-
-# Verificar qué se instaló
-python3 -c "import requests; print('requests OK')" 2>/dev/null || echo "requests no disponible"
-python3 -c "import flask; print('flask OK')" 2>/dev/null || echo "flask no disponible"
-python3 -c "import scapy; print('scapy OK')" 2>/dev/null || echo "scapy no disponible"
-```
-
-**Recomendación para el taller:** Usa la **OPCIÓN A** (`--break-system-packages`) ya que es más rápida y no requiere activar entornos virtuales en cada terminal.
-
 ### **Paso 1.7: Acceder a Archivos de Windows desde WSL**
 
-Los archivos de Windows están disponibles en WSL en `/mnt/c/`:
+Los archivos de Windows están disponibles en WSL en `/mnt/c/` o `/mnt/h/`:
 
 ```bash
 # Ver tus archivos de Windows
 ls /mnt/c/Users/TuUsuario/
 
-# Navegar al directorio del taller
-cd /mnt/c/Users/TuUsuario/"Material para Taller"/Codigos\ Python
-
-# O si está en otra ubicación (ejemplo: H:)
+# Navegar al directorio del taller (ajusta la ruta según tu ubicación)
 cd /mnt/h/"Material para Taller"/Codigos\ Python
+
+# O si está en C:
+cd /mnt/c/Users/TuUsuario/"Material para Taller"/Codigos\ Python
 
 # Verificar que todos los scripts están presentes
 ls -la *.py
@@ -206,92 +160,10 @@ ls -la *.py
 
 ---
 
-## **OPCIÓN 2: WINDOWS NATIVO**
-
-### **Paso 2.1: Instalar Python**
-
-1. Descarga Python desde: https://www.python.org/downloads/
-2. Durante la instalación, **marca la casilla "Add Python to PATH"**
-3. Verifica la instalación:
-
-```cmd
-python --version
-pip --version
-```
-
-### **Paso 2.2: Instalar Nmap para Windows**
-
-1. Descarga Nmap desde: https://nmap.org/download.html
-2. Ejecuta el instalador
-3. Durante la instalación, selecciona instalar **Npcap** (necesario para escaneos)
-4. Verifica la instalación:
-
-```cmd
-nmap --version
-```
-
-### **Paso 2.3: Instalar Hydra para Windows**
-
-1. Descarga Hydra desde: https://github.com/vanhauser-thc/thc-hydra/releases
-2. Extrae el archivo ZIP en `C:\tools\hydra\` (o la ubicación que prefieras)
-3. Agrega Hydra al PATH:
-   - Abre "Variables de entorno" en Windows
-   - Edita la variable PATH
-   - Agrega: `C:\tools\hydra\` (o tu ruta)
-4. Verifica la instalación:
-
-```cmd
-hydra -h
-```
-
-**Alternativa más fácil:** Usa WSL para hydra, ya que es más complejo en Windows.
-
-### **Paso 2.4: Descargar Wordlist rockyou.txt**
-
-```powershell
-# Crear directorio para wordlists
-New-Item -ItemType Directory -Force -Path "C:\tools\wordlists"
-
-# Descargar rockyou.txt
-Invoke-WebRequest -Uri "https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt" -OutFile "C:\tools\wordlists\rockyou.txt"
-
-# Verificar descarga
-Get-Item "C:\tools\wordlists\rockyou.txt" | Select-Object Length
-```
-
-**Nota:** El archivo es grande (~133MB), la descarga puede tardar.
-
-### **Paso 2.5: Instalar Bibliotecas Python**
-
-Abre **CMD** o **PowerShell**:
-
-```cmd
-# Instalar dependencias Python
-pip install requests flask
-
-# Scapy puede ser problemático en Windows, instalar con cuidado
-pip install scapy
-
-# Si scapy falla, puedes omitirlo (no es crítico para estos scripts)
-```
-
-**Verificar instalación:**
-
-```cmd
-python -c "import requests; import flask; print('Bibliotecas instaladas correctamente')"
-```
-
-### **Paso 2.6: Modificar Scripts para Windows (si es necesario)**
-
-Los scripts deberían funcionar en Windows, pero si tienes problemas con `scapy`, puedes comentar las importaciones relacionadas. La mayoría de los scripts funcionan sin scapy.
-
----
-
 ## **CONFIGURACIÓN INICIAL**
 
-### **Paso 3.1: Navegar al Directorio del Proyecto**
+### **Paso 2.1: Navegar al Directorio del Proyecto**
 
-#### **Si usas WSL:**
 ```bash
 # Navegar al directorio (ajusta la ruta según tu ubicación)
 cd /mnt/h/"Material para Taller"/Codigos\ Python
@@ -303,36 +175,19 @@ cd /mnt/c/Users/TuUsuario/"Material para Taller"/Codigos\ Python
 ls -la *.py
 ```
 
-#### **Si usas Windows nativo:**
-```cmd
-# Navegar al directorio
-cd "H:\Material para Taller\Codigos Python"
+**Resultado esperado:** Deberías ver los 6 scripts Python.
 
-# Verificar scripts
-dir *.py
-```
+### **Paso 2.2: Verificar Conectividad de Red**
 
-### **Paso 3.2: Verificar Conectividad de Red**
-
-#### **En WSL:**
 ```bash
 # Obtener tu dirección IP
-ip addr show | grep "inet " | grep -v 127.0.0.1
-
-# O usar comando más simple
 hostname -I
+
+# O más detallado
+ip addr show | grep "inet " | grep -v 127.0.0.1
 
 # Obtener la puerta de enlace
 ip route | grep default
-```
-
-#### **En Windows:**
-```cmd
-# Obtener información de red
-ipconfig
-
-# O más detallado
-ipconfig /all
 ```
 
 **Anota los siguientes datos:**
@@ -340,9 +195,9 @@ ipconfig /all
 - Rango de red: `_________________` (ejemplo: 192.168.86.0)
 - Gateway: `_________________`
 
-### **Paso 3.3: Configurar Dispositivos ESP32**
+### **Paso 2.3: Configurar Dispositivos ESP32**
 
-1. **Abrir Arduino IDE en Windows** (funciona normalmente)
+1. **Abrir Arduino IDE en Windows** (funciona normalmente desde Windows)
 2. **Para ESP32 Simulador de Sala:**
    - Cargar: `Codigos IoT/ESP32_Simulador_de_Sala/ESP32_Simulador_de_Sala.ino`
    - Configurar credenciales WiFi:
@@ -351,45 +206,32 @@ ipconfig /all
      const char* password = "TU_WIFI_PASSWORD";
      ```
    - Subir firmware al ESP32
-   - Anotar IP asignada: `_________________`
+   - Anotar IP asignada: `_________________` (típicamente 192.168.86.114)
 
 3. **Para ESP32 Simulador de Entrada:**
    - Cargar: `Codigos IoT/ESP32_Simulador_de_Entrada/ESP32_Simulador_de_Entrada.ino`
    - Configurar las mismas credenciales WiFi
    - Subir firmware al ESP32
-   - Anotar IP asignada: `_________________`
+   - Anotar IP asignada: `_________________` (típicamente 192.168.86.115)
 
-### **Paso 3.4: Verificar Conectividad con los ESP32**
+### **Paso 2.4: Verificar Conectividad con los ESP32**
 
-#### **En WSL:**
 ```bash
 # Probar conectividad
-ping -c 4 192.168.86.114  # Reemplazar con IP real
-ping -c 4 192.168.86.115
+ping -c 4 192.168.86.114  # Reemplazar con IP real del ESP32 Sala
+ping -c 4 192.168.86.115  # Reemplazar con IP real del ESP32 Entrada
 
 # Probar acceso HTTP
 curl -I http://192.168.86.114/
 curl -I http://192.168.86.115/
 ```
 
-#### **En Windows:**
-```cmd
-# Probar conectividad
-ping -n 4 192.168.86.114
-ping -n 4 192.168.86.115
-
-# Probar acceso HTTP (requiere curl, o usar navegador)
-curl -I http://192.168.86.114/
-curl -I http://192.168.86.115/
-```
-
 **Resultado esperado:** 
-- Ping exitoso
-- Respuesta HTTP 401 (Unauthorized) - esto es correcto
+- Ping exitoso (0% packet loss)
+- Respuesta HTTP 401 (Unauthorized) - esto es correcto, significa que el dispositivo requiere autenticación
 
-### **Paso 3.5: Verificar Credenciales por Defecto**
+### **Paso 2.5: Verificar Credenciales por Defecto**
 
-#### **En WSL o Windows:**
 ```bash
 # Probar credenciales del ESP32 Sala (admin:123456)
 curl -u admin:123456 http://192.168.86.114/
@@ -398,306 +240,385 @@ curl -u admin:123456 http://192.168.86.114/
 curl -u user:12345 http://192.168.86.115/
 ```
 
-**Resultado esperado:** Respuesta HTTP 200 (OK)
+**Resultado esperado:** Respuesta HTTP 200 (OK) con contenido HTML/JSON.
 
 ---
 
 ## **FASE 1: RECONOCIMIENTO**
 
-### **Paso 4.1: Ejecutar Network Scanner**
+### **Paso 3.1: Ejecutar Network Scanner**
 
-#### **En WSL:**
 ```bash
 # Asegúrate de estar en el directorio correcto
 cd /mnt/h/"Material para Taller"/Codigos\ Python
 
-# Ejecutar el scanner
+# Ejecutar el scanner de red
 python3 1-network_scanner.py
-```
-
-#### **En Windows:**
-```cmd
-cd "H:\Material para Taller\Codigos Python"
-python 1-network_scanner.py
 ```
 
 **¿Qué observar?**
 - El script escaneará el rango de red automáticamente
 - Verás progreso en tiempo real
-- Identificará dispositivos activos y puertos abiertos
+- Identificará dispositivos activos y sus puertos abiertos
+- Buscará específicamente dispositivos IoT
 
 **Tiempo estimado:** 10-15 minutos
 
-### **Paso 4.2: Verificar Resultados del Escaneo**
+### **Paso 3.2: Verificar Resultados del Escaneo**
 
-#### **En WSL:**
 ```bash
-# Verificar archivo generado
+# Verificar que se generó el archivo de resultados
 ls -lh scan_results.log
 
-# Ver contenido
+# Ver contenido del archivo (primeras líneas)
 head -20 scan_results.log
 ```
 
-#### **En Windows:**
-```cmd
-dir scan_results.log
-type scan_results.log | more
-```
+**Resultado esperado:** 
+- Archivo `scan_results.log` creado
+- Debe contener información JSON con dispositivos encontrados
+- Deberías ver tus ESP32 listados
 
-**Resultado esperado:** Archivo `scan_results.log` con información JSON
+### **Paso 3.3: Analizar Resultados**
 
-### **Paso 4.3: Analizar Resultados**
-
-#### **En WSL:**
 ```bash
 # Ver resultados formateados
 cat scan_results.log | python3 -m json.tool | less
+
+# O simplemente ver el contenido
+cat scan_results.log
 ```
 
-#### **En Windows:**
-```cmd
-# Ver resultados (puedes abrir en Notepad++)
-python -m json.tool scan_results.log
-```
+**Preguntas para reflexión:**
+- ¿Cuántos dispositivos se encontraron?
+- ¿Qué puertos están abiertos?
+- ¿Se identificaron correctamente los ESP32?
+- ¿Hay otros dispositivos IoT en la red?
 
 ---
 
 ## **FASE 2: ATAQUE Y COMPROMISO**
 
-### **Paso 5.1: Ejecutar Dictionary Attack**
+### **Paso 4.1: Ejecutar Dictionary Attack**
 
-#### **En WSL:**
 ```bash
 # Ejecutar el ataque de diccionario
 python3 2-real_dictionary_attack.py
 ```
 
-#### **En Windows:**
-```cmd
-python 2-real_dictionary_attack.py
-```
+**¿Qué observar?**
+- El script primero descubrirá dispositivos IoT automáticamente
+- Cargará la wordlist rockyou.txt
+- Probará credenciales comunes en cada dispositivo
+- Mostrará progreso en tiempo real con estadísticas
 
-**Nota importante para Windows:** Si el script busca `rockyou.txt` en `/usr/share/wordlists/`, necesitarás modificar el script para que apunte a `C:\tools\wordlists\rockyou.txt`.
+**Tiempo estimado:** 20-30 minutos (puede variar según velocidad de red)
 
-**Modificación necesaria en Windows:**
-Abre `2-real_dictionary_attack.py` y busca la línea que carga la wordlist, cámbiala a:
-```python
-wordlist_path = r"C:\tools\wordlists\rockyou.txt"
-```
+**Nota importante:** Este proceso puede tomar tiempo. El script probará múltiples combinaciones de usuario/contraseña.
 
-**Tiempo estimado:** 20-30 minutos
+### **Paso 4.2: Verificar Credenciales Comprometidas**
 
-### **Paso 5.2: Verificar Credenciales Comprometidas**
-
-#### **En WSL:**
 ```bash
-# Verificar archivo generado
+# Verificar que se generó el archivo de dispositivos comprometidos
 ls -lh compromised_devices.json
 
-# Ver contenido
+# Ver el contenido
 cat compromised_devices.json | python3 -m json.tool
 ```
 
-#### **En Windows:**
-```cmd
-dir compromised_devices.json
-python -m json.tool compromised_devices.json
-```
+**Resultado esperado:**
+- Archivo `compromised_devices.json` creado
+- Debe contener las credenciales de los ESP32 comprometidos
+- Formato JSON con IP, usuario y contraseña
 
-**Resultado esperado:** Archivo JSON con credenciales comprometidas
-
-### **Paso 5.3: Validar Credenciales Manualmente**
+### **Paso 4.3: Validar Credenciales Manualmente**
 
 ```bash
-# Probar las credenciales encontradas
+# Probar las credenciales encontradas (reemplazar con valores reales)
 curl -u admin:123456 http://192.168.86.114/
 curl -u user:12345 http://192.168.86.115/
 ```
+
+**Resultado esperado:** Acceso exitoso a ambos dispositivos.
+
+### **Paso 4.4: Reflexión sobre Seguridad**
+**Preguntas para discusión:**
+- ¿Por qué las contraseñas por defecto son peligrosas?
+- ¿Cuánto tiempo tomó comprometer los dispositivos?
+- ¿Qué medidas podrían prevenir este ataque?
 
 ---
 
 ## **FASE 3: ANÁLISIS Y EXPLOTACIÓN**
 
-### **Paso 6.1: Ejecutar IoT Analyzer**
+### **Paso 5.1: Ejecutar IoT Analyzer**
 
-#### **En WSL:**
 ```bash
+# Ejecutar el analizador de vulnerabilidades
 python3 3-iot_analyzer.py
 ```
 
-#### **En Windows:**
-```cmd
-python 3-iot_analyzer.py
-```
+**¿Qué observar?**
+- El script leerá el archivo `compromised_devices.json`
+- Probará credenciales por defecto
+- Escaneará endpoints sin autenticación
+- Intentará explotar controles remotos
+- Generará un reporte de vulnerabilidades
 
 **Tiempo estimado:** 20-25 minutos
 
-### **Paso 6.2: Revisar Reporte de Vulnerabilidades**
+### **Paso 5.2: Revisar Reporte de Vulnerabilidades**
 
-#### **En WSL:**
 ```bash
+# Ver el reporte generado
 cat vulnerability_report.txt
+
+# O abrir en un editor
+nano vulnerability_report.txt
 ```
 
-#### **En Windows:**
-```cmd
-type vulnerability_report.txt
-notepad vulnerability_report.txt
-```
+**Resultado esperado:**
+- Archivo `vulnerability_report.txt` con análisis detallado
+- Lista de vulnerabilidades encontradas
+- Recomendaciones de seguridad
 
-### **Paso 6.3: Probar Explotación Manual**
+### **Paso 5.3: Probar Explotación Manual**
 
 ```bash
-# Controlar dispositivos usando credenciales comprometidas
+# Controlar dispositivos usando las credenciales comprometidas
+
+# ESP32 Sala - Encender TV
 curl -u admin:123456 -X POST http://192.168.86.114/control/tv -d "state=on"
+
+# ESP32 Sala - Encender luces
 curl -u admin:123456 -X POST http://192.168.86.114/control/lights -d "state=on"
+
+# ESP32 Entrada - Abrir puerta
 curl -u user:12345 -X POST http://192.168.86.115/control/door -d "state=open"
+
+# ESP32 Entrada - Desactivar alarma
+curl -u user:12345 -X POST http://192.168.86.115/control/alarm -d "state=off"
 ```
+
+**Resultado esperado:** Comandos ejecutados exitosamente (si los endpoints existen en tu firmware).
+
+### **Paso 5.4: Documentar Hallazgos**
+Crea un documento con:
+- Vulnerabilidades encontradas
+- Impacto potencial de cada vulnerabilidad
+- Recomendaciones de mitigación
 
 ---
 
 ## **FASE 4: DEMOSTRACIÓN DE BOTNET**
 
-### **Paso 7.1: Verificar Archivo Requerido**
+### **Paso 6.1: Verificar Archivo Requerido**
 
-#### **En WSL:**
 ```bash
+# Asegurarse de que existe el archivo de dispositivos comprometidos
 ls -lh compromised_devices.json
+
+# Verificar contenido
 cat compromised_devices.json
 ```
 
-#### **En Windows:**
-```cmd
-dir compromised_devices.json
-type compromised_devices.json
-```
+**Importante:** Este script requiere que el archivo `compromised_devices.json` exista y tenga contenido válido.
 
-### **Paso 7.2: Ejecutar Botnet Demo**
+### **Paso 6.2: Ejecutar Botnet Demo**
 
-#### **En WSL:**
 ```bash
+# Ejecutar la demostración de botnet
 python3 4-botnet_demo.py
 ```
 
-#### **En Windows:**
-```cmd
-python 4-botnet_demo.py
-```
+**¿Qué observar?**
+- El script cargará los dispositivos comprometidos
+- Establecerá comunicación con cada bot
+- Mostrará un dashboard de control
+- Coordinará ataques DDoS simulados
+- Mostrará métricas en tiempo real
 
 **Tiempo estimado:** 15-20 minutos
 
-### **Paso 7.3: Interactuar con la Botnet**
+### **Paso 6.3: Interactuar con la Botnet**
+El script mostrará un menú interactivo. Prueba los siguientes comandos:
+- Ver estado de todos los bots
+- Iniciar un ataque coordinado
+- Ver estadísticas
+- Monitorear actividad
 
-El script mostrará un menú interactivo. Prueba los comandos disponibles.
+### **Paso 6.4: Observar Comportamiento Coordinado**
+**Preguntas para análisis:**
+- ¿Cómo se coordinan los dispositivos?
+- ¿Qué tipo de tráfico generan?
+- ¿Cómo se detectaría esto en una red real?
+- ¿Qué medidas defensivas serían efectivas?
 
 ---
 
 ## **FASE 5: PANEL WEB DE CONTROL**
 
-### **Paso 8.1: Verificar Dependencias**
+### **Paso 7.1: Verificar Dependencias**
 
-#### **En WSL:**
 ```bash
-python3 -c "import flask; print('Flask instalado')"
+# Verificar que Flask está instalado
+python3 -c "import flask; print('Flask instalado correctamente')"
 ```
 
-#### **En Windows:**
-```cmd
-python -c "import flask; print('Flask instalado')"
+Si no está instalado:
+```bash
+pip3 install --break-system-packages --ignore-installed blinker flask
 ```
 
-### **Paso 8.2: Ejecutar Panel Web**
+### **Paso 7.2: Ejecutar Panel Web**
 
-#### **En WSL:**
 ```bash
+# Ejecutar el controlador web
 python3 5-botnet_web_controller.py
 ```
 
-#### **En Windows:**
-```cmd
-python 5-botnet_web_controller.py
-```
+**¿Qué observar?**
+- El script iniciará un servidor Flask
+- Verás un mensaje indicando la URL (típicamente http://127.0.0.1:5000)
+- El servidor seguirá corriendo hasta que lo detengas
 
-**Nota importante:** En WSL, necesitarás acceder desde Windows usando `localhost` o la IP de WSL.
+**Tiempo estimado:** 10-15 minutos de uso
 
-### **Paso 8.3: Acceder al Panel Web**
+### **Paso 7.3: Acceder al Panel Web**
 
-1. **Si usas WSL:**
-   - El script mostrará una URL (ej: http://127.0.0.1:5000)
-   - Abre tu navegador en Windows y ve a: `http://localhost:5000`
+1. Abre un navegador web en **Windows**
+2. Navega a: `http://localhost:5000`
+3. Observa el dashboard en tiempo real
 
-2. **Si usas Windows nativo:**
-   - Abre: `http://localhost:5000`
+**Características a explorar:**
+- Estado de cada bot
+- Estadísticas de actividad
+- Control remoto de dispositivos
+- Actualización automática de estado
 
-### **Paso 8.4: Detener el Servidor**
+### **Paso 7.4: Probar Funcionalidades**
+- Monitorear el estado de los dispositivos
+- Enviar comandos a dispositivos específicos
+- Observar cambios en tiempo real
+- Revisar métricas y estadísticas
 
-Presiona `Ctrl+C` en la terminal para detener el servidor.
+### **Paso 7.5: Detener el Servidor**
+Cuando termines, presiona `Ctrl+C` en la terminal para detener el servidor.
 
 ---
 
 ## **FASE 6: HERRAMIENTAS DEFENSIVAS**
 
-### **Paso 9.1: Ejecutar Security Tool**
+### **Paso 8.1: Ejecutar Security Tool**
 
-#### **En WSL:**
 ```bash
+# Ejecutar herramientas defensivas
 python3 6-security_tool.py
 ```
 
-#### **En Windows:**
-```cmd
-python 6-security_tool.py
-```
+**¿Qué observar?**
+- El script escaneará la red nuevamente
+- Creará un inventario de dispositivos
+- Evaluará configuraciones de seguridad
+- Generará recomendaciones de hardening
+- Creará un reporte de estado de seguridad
 
 **Tiempo estimado:** 10-15 minutos
 
-### **Paso 9.2: Revisar Reporte de Seguridad**
+### **Paso 8.2: Revisar Reporte de Seguridad**
 
-#### **En WSL:**
 ```bash
+# Ver el reporte generado
 cat security_report.txt
+
+# O abrir en un editor
+nano security_report.txt
 ```
 
-#### **En Windows:**
-```cmd
-type security_report.txt
-notepad security_report.txt
-```
+**Resultado esperado:**
+- Archivo `security_report.txt` con evaluación completa
+- Lista de dispositivos y su estado de seguridad
+- Recomendaciones específicas para cada dispositivo
+
+### **Paso 8.3: Implementar Recomendaciones**
+Revisa las recomendaciones y considera:
+- Cambiar credenciales por defecto
+- Deshabilitar servicios innecesarios
+- Implementar autenticación más fuerte
+- Configurar monitoreo continuo
+
+### **Paso 8.4: Comparar Antes y Después**
+**Preguntas para reflexión:**
+- ¿Qué vulnerabilidades se identificaron?
+- ¿Cuáles son las más críticas?
+- ¿Qué medidas son más fáciles de implementar?
+- ¿Cómo se podría automatizar el monitoreo?
 
 ---
 
 ## **EJERCICIOS ADICIONALES**
 
-### **Ejercicio 1: Análisis con Nmap**
-
-#### **En WSL:**
+### **Ejercicio 1: Análisis Profundo de Red**
 ```bash
+# Usar nmap para análisis más detallado
 nmap -sV -sC -O 192.168.86.114
 nmap -sV -sC -O 192.168.86.115
+
+# Guardar resultados
+nmap -sV -sC -O 192.168.86.114 -oN nmap_esp32_sala.txt
+nmap -sV -sC -O 192.168.86.115 -oN nmap_esp32_entrada.txt
 ```
 
-#### **En Windows:**
-```cmd
-nmap -sV -sC -O 192.168.86.114
-nmap -sV -sC -O 192.168.86.115
+**Tarea:** Comparar los resultados con los del script 1.
+
+### **Ejercicio 2: Crear Wordlist Personalizada**
+```bash
+# Crear una wordlist con contraseñas comunes de IoT
+cat > custom_wordlist.txt << EOF
+admin
+123456
+password
+12345
+root
+user
+guest
+1234
+admin123
+password123
+EOF
+
+# Modificar el script 2 para usar esta wordlist
 ```
 
-### **Ejercicio 2: Monitoreo de Tráfico**
+**Tarea:** Modificar `2-real_dictionary_attack.py` para usar tu wordlist personalizada.
 
-#### **En WSL:**
+### **Ejercicio 3: Monitoreo de Tráfico**
 ```bash
 # Instalar tcpdump
 sudo apt install -y tcpdump
 
-# Capturar tráfico
+# Capturar tráfico de red mientras se ejecutan los scripts
 sudo tcpdump -i any -w iot_traffic.pcap host 192.168.86.114 or host 192.168.86.115
+
+# Analizar con Wireshark (instalar en Windows)
+# wireshark iot_traffic.pcap
 ```
 
-#### **En Windows:**
-- Usa **Wireshark** (descarga desde wireshark.org)
-- Captura tráfico desde la interfaz de red
-- Filtra por las IPs de los ESP32
+**Tarea:** Identificar patrones de tráfico malicioso.
+
+### **Ejercicio 4: Script de Hardening Automático**
+Crea un script que:
+- Cambie credenciales por defecto
+- Deshabilite servicios innecesarios
+- Configure logging
+- Implemente rate limiting
+
+### **Ejercicio 5: Dashboard de Monitoreo Mejorado**
+Modifica el script 5 para agregar:
+- Gráficos de actividad
+- Alertas en tiempo real
+- Historial de eventos
+- Exportación de reportes
 
 ---
 
@@ -718,41 +639,28 @@ wsl --install -d Ubuntu
 
 ### **Problema 2: "No se encuentran dispositivos IoT"**
 
-**Solución WSL:**
+**Solución:**
 ```bash
 # WSL puede tener problemas con la red, verificar:
 ip addr show
 
 # Si no tienes IP, reiniciar WSL:
 wsl --shutdown
-# Luego abrir Ubuntu de nuevo
-```
-
-**Solución Windows:**
-```cmd
-# Verificar firewall de Windows
-netsh advfirewall show allprofiles
-
-# Permitir Python si es necesario
-netsh advfirewall firewall add rule name="Python" dir=in action=allow program="C:\Python\python.exe"
+# Luego abrir Ubuntu de nuevo desde Windows
 ```
 
 ### **Problema 3: "Error al importar módulos Python" o "externally-managed-environment"**
 
-**Este es un error común en Ubuntu/Debian recientes (PEP 668).**
-
-**Solución Rápida (Recomendada para talleres):**
+**Solución Rápida:**
 ```bash
-# En WSL - usar flag --break-system-packages
-pip3 install --break-system-packages --upgrade requests flask scapy
+# Usar flag --break-system-packages
+pip3 install --break-system-packages --ignore-installed blinker requests flask scapy
 
 # Verificar instalación
 python3 -c "import requests; import flask; import scapy; print('OK')"
 ```
 
-### **Problema 3.1: "Cannot uninstall blinker" o "RECORD file not found"**
-
-**Este error ocurre cuando hay conflicto entre paquetes del sistema y pip.**
+### **Problema 4: "Cannot uninstall blinker" o "RECORD file not found"**
 
 **Solución:**
 ```bash
@@ -768,37 +676,21 @@ python3 -c "import flask; print('Flask OK')"
 
 **Explicación:** `--ignore-installed` le dice a pip que ignore la versión instalada por el sistema y use la nueva versión sin intentar desinstalar la anterior.
 
-**Solución con Entorno Virtual (Mejor práctica):**
+### **Problema 5: "rockyou.txt no encontrado"**
+
+**Solución:**
 ```bash
-# Crear y activar entorno virtual
-python3 -m venv ~/iot_taller_env
-source ~/iot_taller_env/bin/activate
-
-# Instalar dependencias
-pip install requests flask scapy
-
-# Recordar activar el entorno cada vez: source ~/iot_taller_env/bin/activate
-```
-
-**Solución Windows:**
-```cmd
-pip install --upgrade requests flask
-```
-
-### **Problema 4: "rockyou.txt no encontrado"**
-
-**Solución WSL:**
-```bash
+# Instalar wordlists
 sudo apt install -y wordlists
+
+# O descargar manualmente
+cd /tmp
+wget https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt
+sudo mv rockyou.txt /usr/share/wordlists/
+cd ~
 ```
 
-**Solución Windows:**
-```powershell
-# Descargar manualmente
-Invoke-WebRequest -Uri "https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt" -OutFile "C:\tools\wordlists\rockyou.txt"
-```
-
-### **Problema 5: "Flask no accesible desde Windows cuando se ejecuta en WSL"**
+### **Problema 6: "Flask no accesible desde Windows cuando se ejecuta en WSL"**
 
 **Solución:**
 ```bash
@@ -809,33 +701,33 @@ Invoke-WebRequest -Uri "https://github.com/brannondorsey/naive-hashcat/releases/
 # O obtener la IP de WSL:
 hostname -I
 
-# Y acceder desde Windows usando esa IP
+# Y acceder desde Windows usando esa IP o simplemente usar localhost:5000
 ```
 
-### **Problema 6: "Permisos denegados en escaneos"**
+**Nota:** Normalmente `localhost:5000` desde Windows debería funcionar automáticamente con WSL2.
 
-**Solución WSL:**
+### **Problema 7: "Permisos denegados en escaneos"**
+
+**Solución:**
 ```bash
 # Algunos escaneos requieren permisos de root
 sudo python3 1-network_scanner.py
 ```
 
-**Solución Windows:**
-- Ejecutar CMD o PowerShell como Administrador
-
-### **Problema 7: "Los ESP32 no responden desde WSL"**
+### **Problema 8: "Los ESP32 no responden desde WSL"**
 
 **Solución:**
 - Verificar que WSL puede acceder a la red de Windows
-- Probar ping desde WSL
-- Si no funciona, usar Windows nativo para esa parte
+- Probar ping desde WSL: `ping -c 4 192.168.86.114`
+- Verificar que los ESP32 están en la misma red WiFi
+- Reiniciar WSL si es necesario: `wsl --shutdown`
 
-### **Problema 8: "Rutas de archivos no funcionan"**
+### **Problema 9: "Rutas de archivos no funcionan"**
 
 **Solución:**
 - En WSL, usa rutas de Windows: `/mnt/c/` o `/mnt/h/`
-- En Windows, usa rutas normales: `C:\` o `H:\`
-- Usa comillas para rutas con espacios
+- Usa comillas para rutas con espacios: `cd "/mnt/h/Material para Taller/Codigos Python"`
+- Verifica que los archivos existen: `ls -la`
 
 ---
 
@@ -843,7 +735,9 @@ sudo python3 1-network_scanner.py
 
 ### **Checklist de Completación**
 
-- [ ] WSL instalado y configurado (o Windows nativo configurado)
+Marca cada ítem cuando lo completes:
+
+- [ ] WSL instalado y configurado
 - [ ] Todas las herramientas instaladas
 - [ ] Dispositivos ESP32 configurados y accesibles
 - [ ] Script 1 ejecutado - Escaneo de red completado
@@ -853,24 +747,48 @@ sudo python3 1-network_scanner.py
 - [ ] Script 5 ejecutado - Panel web funcionando
 - [ ] Script 6 ejecutado - Herramientas defensivas
 - [ ] Todos los archivos de reporte generados
+- [ ] Ejercicios adicionales completados (opcional)
 
 ### **Archivos Generados Esperados**
-
-#### **En WSL:**
 ```bash
-ls -lh *.log *.json *.txt
+# Verificar todos los archivos generados
+ls -lh *.log *.json *.txt 2>/dev/null
+
+# Deberías ver:
+# - scan_results.log
+# - compromised_devices.json
+# - vulnerability_report.txt
+# - security_report.txt
 ```
 
-#### **En Windows:**
-```cmd
-dir *.log *.json *.txt
-```
+### **Resumen de Aprendizaje**
 
-**Deberías ver:**
-- `scan_results.log`
-- `compromised_devices.json`
-- `vulnerability_report.txt`
-- `security_report.txt`
+Al completar este taller, deberías haber aprendido:
+
+1. **Reconocimiento de Red:**
+   - Técnicas de escaneo de red
+   - Identificación de dispositivos IoT
+   - Análisis de servicios y puertos
+
+2. **Ataques de Autenticación:**
+   - Ataques de diccionario
+   - Vulnerabilidades de contraseñas débiles
+   - Automatización de ataques
+
+3. **Análisis de Vulnerabilidades:**
+   - Identificación de configuraciones inseguras
+   - Explotación controlada
+   - Evaluación de impacto
+
+4. **Amenazas Avanzadas:**
+   - Arquitecturas de botnets
+   - Ataques coordinados
+   - Comando y control
+
+5. **Defensa:**
+   - Herramientas de monitoreo
+   - Evaluación de seguridad
+   - Recomendaciones de hardening
 
 ---
 
@@ -896,36 +814,26 @@ dir *.log *.json *.txt
 ### **Durante el Taller:**
 
 1. **Tiempo de instalación:**
-   - Reservar 30-45 minutos al inicio para instalación
+   - Reservar 30-45 minutos al inicio para instalación de WSL
    - Tener alumnos con WSL pre-instalado ayudar a otros
    - Tener scripts de instalación automatizados listos
 
-2. **Alternativas:**
-   - Si WSL no funciona para algún alumno, usar Windows nativo
-   - Tener versiones modificadas de scripts para Windows listas
-
-3. **Soporte:**
+2. **Soporte:**
    - Tener lista de problemas comunes a mano
    - Designar alumnos ayudantes para problemas técnicos
+   - Preparar soluciones rápidas para problemas frecuentes
 
-### **Scripts de Instalación Rápida:**
+### **Script de Instalación Rápida:**
 
 #### **Para WSL (PowerShell como Admin):**
 ```powershell
 # Script de instalación automatizada
 wsl --install
 Write-Host "Reinicia tu computadora y luego ejecuta el siguiente comando en Ubuntu:"
-Write-Host "sudo apt update && sudo apt install -y hydra nmap curl python3 python3-pip git wordlists && pip3 install --break-system-packages requests flask scapy"
+Write-Host "sudo apt update && sudo apt install -y hydra nmap curl python3 python3-pip git wordlists && pip3 install --break-system-packages --ignore-installed blinker requests flask scapy"
 ```
 
-**Nota:** El flag `--break-system-packages` es necesario en Ubuntu/Debian recientes debido a PEP 668.
-
-#### **Para Windows Nativo:**
-Crear un script batch que:
-- Verifique Python instalado
-- Descargue e instale Nmap
-- Descargue rockyou.txt
-- Instale dependencias Python
+**Nota:** Los flags `--break-system-packages` y `--ignore-installed` son necesarios en Ubuntu/Debian recientes debido a PEP 668.
 
 ---
 
@@ -936,19 +844,22 @@ Crear un script batch que:
 - ✅ Todas las herramientas funcionan sin modificaciones
 - ✅ Mejor para aprendizaje de seguridad
 - ✅ Fácil de usar una vez configurado
+- ✅ Acceso directo a archivos de Windows
+- ✅ Integración perfecta con Windows
 
-### **Ventajas de Windows Nativo:**
-- ✅ No requiere instalación adicional
-- ✅ Familiar para usuarios de Windows
-- ⚠️ Requiere más configuración
-- ⚠️ Algunas herramientas pueden no funcionar perfectamente
+### **Consideraciones Éticas:**
+- Este taller debe realizarse solo en entornos controlados
+- Todos los dispositivos deben ser de tu propiedad o tener autorización explícita
+- No utilices estas técnicas en redes sin autorización
 
-### **Recomendación Final:**
-**Usa WSL siempre que sea posible.** Es la opción más confiable y compatible con todas las herramientas del taller.
+### **Recursos Adicionales:**
+- Documentación oficial de ESP32
+- OWASP IoT Security Top 10
+- NIST Guidelines for IoT Security
+- Foros de seguridad IoT
 
 ---
 
-**¡Felicitaciones por completar el Taller Adicional de Seguridad IoT en Windows!**
+**¡Felicitaciones por completar el Taller Adicional de Seguridad IoT!**
 
-*Esta guía te ha llevado paso a paso a través de todo el proceso adaptado para Windows. Continúa practicando y aprendiendo sobre seguridad IoT.*
-
+*Esta guía te ha llevado paso a paso a través de todo el proceso usando WSL. Continúa practicando y aprendiendo sobre seguridad IoT.*
