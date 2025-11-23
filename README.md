@@ -254,6 +254,25 @@ Al completar este taller, los participantes habrán:
 - Desarrollado conciencia de mejores prácticas de seguridad
 - Experimentado el ciclo completo de seguridad IoT
 
+## Diagrama de Red - Proyecto IoT
+
+```mermaid
+graph TB
+    R[Router Principal<br/>10.0.0.1]
+    
+    R --> ESP1[ESP32 #1<br/>10.0.0.2]
+    R --> ESP2[ESP32 #2<br/>10.0.0.3]
+    R --> ATK[Computadora Atacante<br/>10.0.0.100]
+    
+    classDef router fill:#e1f5fe
+    classDef iot fill:#c8e6c9
+    classDef attacker fill:#ffcdd2
+    
+    class R router
+    class ESP1,ESP2 iot
+    class ATK attacker
+```
+
 ## 🤝 Contribuciones
 
 Este es un proyecto educativo. Las mejoras y sugerencias son bienvenidas, siempre manteniendo el enfoque educativo y ético.
